@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <vfs_path>examples/vfs/from_config.xml</vfs_path>
+    <startup_script>examples/startup/ok.txt</startup_script>
+</config>
