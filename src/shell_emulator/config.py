@@ -1,7 +1,7 @@
 """Настройки эмулятора: параметры командной строки и XML-конфиг."""
 
 import argparse
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 from dataclasses import dataclass
 
 
@@ -51,10 +51,10 @@ def _read_text_field(root, tag):
 def read_config_file(path):
     """Читает XML-конфиг, возвращает Settings (только vfs и скрипт)."""
     try:
-        root = ET.parse(path).getroot()
+        root = et.parse(path).getroot()
     except OSError as exc:
         raise ConfigError(f"не удалось открыть '{path}': {exc}") from exc
-    except ET.ParseError as exc:
+    except et.ParseError as exc:
         raise ConfigError(f"некорректный XML в '{path}': {exc}") from exc
 
     if root.tag != "config":
