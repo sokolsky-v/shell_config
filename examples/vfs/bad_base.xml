@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vfs name="bad_base64">
+    <file name="logo.bin" encoding="base64">это не base64!!!</file>
+</vfs>

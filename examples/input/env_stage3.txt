@@ -1,0 +1,3 @@
+ls -l $DEMO_DIR
+cd $DEMO_DIR
+exit

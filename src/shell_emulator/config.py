@@ -89,6 +89,7 @@ def load_settings(argv=None):
 def format_debug(settings):
     """Строки отладочного вывода всех заданных параметров."""
     def show(value):
+        """Значение параметра или пометка, что он не задан."""
         return value if value is not None else "<не задан>"
 
     return [

@@ -146,3 +146,58 @@ myvfs> foobar
 > python -m src.shell_emulator.main --config examples/configs/config_broken.xml
 Ошибка: конфигурация: некорректный XML в 'examples/configs/config_broken.xml': mismatched tag: line 4, column 2
 ```
+
+
+## Этап 3. Виртуальная файловая система (VFS)
+
+VFS загружается из XML-файла (параметр `--vfs`) **целиком в память**.
+Эмулятор не распаковывает и не изменяет файл на диске. Если `--vfs`
+не задан, используется пустая VFS с именем `myvfs`.
+Имя VFS (атрибут `name` корня, иначе имя файла) показывается в приглашении.
+
+Формат XML:
+
+```xml
+<vfs name="demo">
+    <file name="a.txt">текстовое содержимое</file>
+    <file name="logo.bin" encoding="base64">iVBORw0KGgo=</file>
+    <dir name="docs">
+        <file name="b.txt">...</file>
+    </dir>
+</vfs>
+```
+
+- `<dir name="...">` - каталог, может содержать `dir` и `file`;
+- `<file name="...">` - файл; без `encoding` содержимое считается
+  текстом UTF-8, с `encoding="base64"` - двоичными данными;
+- имена не могут быть пустыми, содержать `/` и повторяться в одном каталоге.
+
+Служебная команда `vfs-info` печатает имя VFS, число каталогов, файлов
+и глубину вложенности.
+
+| Ситуация | Сообщение | Код |
+|---|---|---|
+| XML-файл не найден | `Ошибка: VFS: не удалось открыть ...` | 1 |
+| Некорректный XML | `Ошибка: VFS: некорректный XML ...` | 1 |
+| Корневой тег не `<vfs>` | `Ошибка: VFS: корневой тег должен быть <vfs> ...` | 1 |
+| Неверный base64 | `Ошибка: VFS: файл '...': некорректный base64` | 1 |
+| Повторяющееся имя | `Ошибка: VFS: повторяющееся имя '...'` | 1 |
+
+Примеры VFS лежат в `examples/vfs/`, скрипты проверки - в `scripts/`
+(`test_vfs_variants.bat`, `test_vfs_errors.bat`, `test_stage3_all.bat`).
+
+Пример:
+
+```
+> python -m src.shell_emulator.main --vfs examples/vfs/deep.xml --script examples/startup/info.txt
+[debug] Параметры запуска:
+[debug]   vfs    = examples/vfs/deep.xml
+[debug]   script = examples/startup/info.txt
+[debug]   config = <не задан>
+deep> vfs-info
+VFS: deep
+Каталогов: 7
+Файлов: 8
+Глубина: 5
+deep> exit
+```

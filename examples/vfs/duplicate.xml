@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vfs name="duplicate">
+    <file name="a.txt">первый</file>
+    <file name="a.txt">второй</file>
+</vfs>
