@@ -66,3 +66,32 @@ class Vfs:
     def stats(self):
         """Возвращает сводку по всей VFS."""
         return measure(self.root)
+    
+
+def normalize(cwd, path):
+    """Превращает путь (абсолютный или относительный) в список имён.
+
+    Понимает '.', '..' и повторные '/'. Выше корня подняться нельзя.
+    """
+    parts = [] if path.startswith("/") else list(cwd)
+    for part in path.split("/"):
+        if part in ("", "."):
+            continue
+        if part == "..":
+            if parts:
+                parts.pop()
+        else:
+            parts.append(part)
+    return parts
+
+
+def lookup(vfs, parts):
+    """Находит узел VFS по списку имён от корня."""
+    node = vfs.root
+    for part in parts:
+        if not isinstance(node, Directory):
+            raise VfsError("не является каталогом")
+        if part not in node.children:
+            raise VfsError("нет такого файла или каталога")
+        node = node.children[part]
+    return node

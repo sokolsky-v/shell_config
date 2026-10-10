@@ -1,0 +1,48 @@
+# Этап 4: команды ls, cd, pwd, head, uniq (запуск с --vfs deep.xml)
+
+# pwd: где мы сейчас
+pwd
+
+# ls: без аргументов, подробный формат, путь, файл
+ls
+ls -l
+ls projects
+ls -l projects/emulator
+ls projects/emulator/src/main.py
+
+# cd: относительный и абсолютный путь, '..', без аргумента
+cd projects/emulator
+pwd
+cd src/utils
+pwd
+ls
+cd ../..
+pwd
+cd /home/user
+pwd
+cd ..
+pwd
+cd
+pwd
+
+# head: 10 строк по умолчанию, -n, -n больше длины файла, -n 0
+head numbers.txt
+head -n 3 numbers.txt
+head -n 100 home/user/todo.txt
+head -n 0 numbers.txt
+
+# uniq: обычный режим, -c, -d, -u и сочетание -c -d
+uniq dups.txt
+uniq -c dups.txt
+uniq -d dups.txt
+uniq -u dups.txt
+uniq -c -d dups.txt
+
+# Относительные пути работают от текущего каталога
+cd home/user
+head todo.txt
+
+# Намеренная ошибка в последней строке: head не читает двоичные файлы
+head ../../logo.bin
+# Эта команда не выполнится
+pwd

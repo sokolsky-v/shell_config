@@ -1,16 +1,8 @@
 """Команды эмулятора и их диспетчер."""
 
 from src.shell_emulator.errors import CommandError
-
-
-def cmd_ls(session, arguments):
-    """Заглушка ls: печатает имя команды и аргументы."""
-    return f"CMD: ls ARGS: {list(arguments)}"
-
-
-def cmd_cd(session, arguments):
-    """Заглушка cd: печатает имя команды и аргументы."""
-    return f"CMD: cd ARGS: {list(arguments)}"
+from src.shell_emulator.fs_commands import cmd_cd, cmd_ls, cmd_pwd
+from src.shell_emulator.text_commands import cmd_head, cmd_uniq
 
 
 def cmd_vfs_info(session, arguments):
@@ -31,6 +23,9 @@ def cmd_vfs_info(session, arguments):
 COMMAND_TABLE = {
     "ls": cmd_ls,
     "cd": cmd_cd,
+    "pwd": cmd_pwd,
+    "head": cmd_head,
+    "uniq": cmd_uniq,
     "vfs-info": cmd_vfs_info,
 }
 

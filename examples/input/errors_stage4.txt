@@ -1,0 +1,24 @@
+ls nope
+ls -x
+ls projects extra
+cd nope
+cd logo.bin
+cd one two
+pwd extra
+head
+head nope.txt
+head projects
+head logo.bin
+head -n
+head -n abc numbers.txt
+head -n -2 numbers.txt
+head -x numbers.txt
+head numbers.txt dups.txt
+uniq
+uniq nope.txt
+uniq projects
+uniq logo.bin
+uniq -d -u dups.txt
+uniq -x dups.txt
+pwd
+exit

@@ -15,22 +15,22 @@ def make_script(tmp_path, text):
 
 
 def test_script_shows_input_and_output(tmp_path, capsys, session):
-    path = make_script(tmp_path, "ls a\ncd b\n")
+    path = make_script(tmp_path, "cd docs\npwd\n")
     run_script(path, "vfs> ", partial(handle_line, session))
     out = capsys.readouterr().out
-    assert "vfs> ls a" in out
-    assert "CMD: ls ARGS: ['a']" in out
-    assert "vfs> cd b" in out
+    assert "vfs> cd docs" in out
+    assert "vfs> pwd" in out
+    assert "/docs" in out
 
 
 def test_script_skips_comments_and_blank_lines(tmp_path, capsys, session):
-    path = make_script(tmp_path, "# коммент\n\nls a\n")
+    path = make_script(tmp_path, "# коммент\n\npwd\n")
     run_script(path, "vfs> ", partial(handle_line, session))
     assert "коммент" not in capsys.readouterr().out
 
 
 def test_script_stops_on_first_error(tmp_path, capsys, session):
-    path = make_script(tmp_path, "ls a\nfoobar\ncd never\n")
+    path = make_script(tmp_path, "pwd\nls nope\ncd never\n")
     with pytest.raises(ScriptError):
         run_script(path, "vfs> ", partial(handle_line, session))
     assert "never" not in capsys.readouterr().out
@@ -42,6 +42,6 @@ def test_missing_script_raises(session):
 
 
 def test_exit_in_script_raises_system_exit(tmp_path, session):
-    path = make_script(tmp_path, "ls a\nexit\ncd never\n")
+    path = make_script(tmp_path, "pwd\nexit\ncd never\n")
     with pytest.raises(SystemExit):
         run_script(path, "vfs> ", partial(handle_line, session))

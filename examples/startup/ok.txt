@@ -1,5 +1,5 @@
 # Стартовый скрипт без ошибок
-ls /home
-cd $USERPROFILE
-ls -la
+ls
+ls -l
+cd /
 exit
