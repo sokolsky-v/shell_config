@@ -1,5 +1,6 @@
 """Команды эмулятора и их диспетчер."""
 
+from src.shell_emulator.edit_commands import cmd_mv, cmd_touch
 from src.shell_emulator.errors import CommandError
 from src.shell_emulator.fs_commands import cmd_cd, cmd_ls, cmd_pwd
 from src.shell_emulator.text_commands import cmd_head, cmd_uniq
@@ -26,6 +27,8 @@ COMMAND_TABLE = {
     "pwd": cmd_pwd,
     "head": cmd_head,
     "uniq": cmd_uniq,
+    "touch": cmd_touch,
+    "mv": cmd_mv,
     "vfs-info": cmd_vfs_info,
 }
 

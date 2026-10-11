@@ -1,0 +1,18 @@
+touch
+touch -x file.txt
+touch nope/file.txt
+touch numbers.txt/file.txt
+mv
+mv numbers.txt
+mv one two three
+mv -x numbers.txt home
+mv nope.txt home
+mv numbers.txt nope/x.txt
+mv numbers.txt dups.txt/x.txt
+mv numbers.txt numbers.txt
+mv numbers.txt /
+mv projects projects/emulator
+mv projects numbers.txt
+mv / home
+ls
+exit

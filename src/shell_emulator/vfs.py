@@ -95,3 +95,82 @@ def lookup(vfs, parts):
             raise VfsError("нет такого файла или каталога")
         node = node.children[part]
     return node
+
+
+def _labeled(label, text):
+    """Добавляет к тексту ошибки пояснение, если оно задано."""
+    return f"{label}: {text}" if label else text
+
+
+def _lookup_labeled(vfs, parts, label):
+    """Как lookup, но добавляет к тексту ошибки пояснение (label)."""
+    try:
+        return lookup(vfs, parts)
+    except VfsError as exc:
+        raise VfsError(_labeled(label, str(exc))) from exc
+
+
+def _parent_and_name(vfs, parts, label=None):
+    """Возвращает (каталог-родитель, имя) для непустого пути."""
+    parent = _lookup_labeled(vfs, parts[:-1], label)
+    if not isinstance(parent, Directory):
+        raise VfsError(_labeled(label, "не является каталогом"))
+    return parent, parts[-1]
+
+
+def create_file(vfs, parts):
+    """Создаёт пустой файл. Существующий узел не меняется.
+
+    Возвращает True, если файл был создан.
+    """
+    if not parts:
+        return False
+    parent, name = _parent_and_name(vfs, parts)
+    if name in parent.children:
+        return False
+    parent.add(File(name, b""))
+    return True
+
+
+def _final_destination(vfs, src, dst):
+    """Если назначение - существующий каталог, перемещаем внутрь него."""
+    try:
+        target = lookup(vfs, dst)
+    except VfsError:
+        return dst
+    if isinstance(target, Directory):
+        return dst + [src[-1]]
+    return dst
+
+
+def _check_replaceable(node, existing):
+    """Заменить можно только файл файлом."""
+    if isinstance(node, Directory) or isinstance(existing, Directory):
+        raise VfsError("назначение уже существует")
+
+
+def move_node(vfs, src, dst, overwrite=True):
+    """Перемещает или переименовывает узел внутри VFS.
+
+    Возвращает итоговый путь (список имён) или None, если перемещение
+    пропущено из-за запрета перезаписи (overwrite=False).
+    """
+    node = _lookup_labeled(vfs, src, "источник")
+    if not src:
+        raise VfsError("нельзя переместить корневой каталог")
+    dst = _final_destination(vfs, src, dst)
+    if dst == src:
+        raise VfsError("источник и назначение совпадают")
+    if dst[: len(src)] == src:
+        raise VfsError("нельзя переместить каталог в самого себя")
+    parent, name = _parent_and_name(vfs, dst, "назначение")
+    existing = parent.children.get(name)
+    if existing is not None:
+        if not overwrite:
+            return None
+        _check_replaceable(node, existing)
+    old_parent = lookup(vfs, src[:-1])
+    del old_parent.children[src[-1]]
+    node.name = name
+    parent.children[name] = node
+    return dst

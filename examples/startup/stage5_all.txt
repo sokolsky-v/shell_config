@@ -1,0 +1,45 @@
+# Этап 5: команды touch и mv (запуск с --vfs deep.xml)
+# Все изменения происходят только в памяти, XML-файл не меняется
+
+# touch: создание файлов (один, несколько, по относительному пути)
+ls
+touch new.txt
+touch a.txt b.txt
+touch home/user/draft.txt
+ls
+ls home/user
+# touch существующего файла ничего не ломает
+touch numbers.txt
+head -n 2 numbers.txt
+
+# mv: переименование файла
+mv new.txt renamed.txt
+ls
+# mv: перемещение файла в существующий каталог
+mv a.txt home
+ls home
+# mv: перемещение с новым именем в другой каталог
+mv b.txt projects/emulator/b_moved.txt
+ls projects/emulator
+# mv: перезапись существующего файла
+mv numbers.txt dups.txt
+head -n 3 dups.txt
+# mv -n: не перезаписывать существующий файл
+touch keep.txt
+mv -n keep.txt renamed.txt
+ls
+# mv: перемещение каталога вместе с содержимым
+mv projects home
+ls home
+ls home/projects/emulator/src
+# текущий каталог переезжает вместе с каталогом
+cd /home/projects/emulator
+mv /home/projects /empty
+pwd
+ls
+cd /
+
+# Намеренная ошибка в последней строке: источник не существует
+mv nothing.txt home
+# Эта команда не выполнится
+pwd
