@@ -1,7 +1,7 @@
 """Команды изменения VFS (только в памяти): touch, mv."""
 
 from src.shell_emulator.errors import CommandError
-from src.shell_emulator.vfs import VfsError, create_file, move_node, normalize
+from src.shell_emulator.vfs import VfsError, create_file, move_node, normalize, Directory, lookup
 
 NO_CLOBBER_OPTION = "-n"
 MV_OPERANDS = 2
@@ -22,16 +22,30 @@ def _split_options(command, arguments, known_options):
 
 
 def cmd_touch(session, arguments):
-    """touch файл...: создаёт пустые файлы (существующие не меняет)."""
+    """touch файл...: создаёт пустые файлы или обновляет существующие (не вызывая ошибок)."""
     _, operands = _split_options("touch", arguments, ())
     if not operands:
         raise CommandError("touch: не указан файл")
+    
     for path in operands:
         try:
-            create_file(session.vfs, normalize(session.cwd, path))
+            full_path = normalize(session.cwd, path)
+            # Пытаемся найти файл/узел в VFS
+            try:
+                existing_node = lookup(session.vfs, full_path)
+                # Если узел существует и это каталог — Unix touch выдает ошибку
+                if isinstance(existing_node, Directory):
+                    raise CommandError(f"touch: {path}: К сожалению, это каталог")
+                # Если это файл, мы просто ничего не делаем (имитируем обновление времени в памяти)
+                continue
+            except VfsError:
+                # Если файла нет — создаем новый пустой файл
+                create_file(session.vfs, full_path)
+                
         except VfsError as exc:
             raise CommandError(f"touch: {path}: {exc}") from exc
     return ""
+
 
 
 def _follow_cwd(session, src, final):

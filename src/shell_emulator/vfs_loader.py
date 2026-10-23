@@ -1,7 +1,7 @@
 """Загрузка VFS из XML-файла прямо в память."""
 
 import base64
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 from pathlib import Path
 
 from src.shell_emulator.vfs import Directory, File, Vfs, VfsError
@@ -56,10 +56,10 @@ def _fill_directory(directory, element):
 def load_vfs(path):
     """Читает XML-файл и строит VFS в памяти (файл не изменяется)."""
     try:
-        root_element = ET.parse(path).getroot()
+        root_element = et.parse(path).getroot()
     except OSError as exc:
         raise VfsError(f"не удалось открыть '{path}': {exc}") from exc
-    except ET.ParseError as exc:
+    except et.ParseError as exc:
         raise VfsError(f"некорректный XML в '{path}': {exc}") from exc
 
     if root_element.tag != ROOT_TAG:
