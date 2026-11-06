@@ -1,7 +1,14 @@
 """Команды изменения VFS (только в памяти): touch, mv."""
 
 from src.shell_emulator.errors import CommandError
-from src.shell_emulator.vfs import VfsError, create_file, move_node, normalize, Directory, lookup
+from src.shell_emulator.vfs import (
+    Directory,
+    VfsError,
+    create_file,
+    lookup,
+    move_node,
+    normalize,
+)
 
 NO_CLOBBER_OPTION = "-n"
 MV_OPERANDS = 2
@@ -22,30 +29,30 @@ def _split_options(command, arguments, known_options):
 
 
 def cmd_touch(session, arguments):
-    """touch файл...: создаёт пустые файлы или обновляет существующие (не вызывая ошибок)."""
+    """touch файл...: создаёт пустые файлы, существующие не меняет.
+
+    В VFS нет времени изменения, поэтому для существующего файла
+    команда ничего не делает, а для каталога, как в Unix, даёт ошибку.
+    """
     _, operands = _split_options("touch", arguments, ())
     if not operands:
         raise CommandError("touch: не указан файл")
-    
+
     for path in operands:
         try:
             full_path = normalize(session.cwd, path)
-            # Пытаемся найти файл/узел в VFS
             try:
-                existing_node = lookup(session.vfs, full_path)
-                # Если узел существует и это каталог — Unix touch выдает ошибку
-                if isinstance(existing_node, Directory):
-                    raise CommandError(f"touch: {path}: К сожалению, это каталог")
-                # Если это файл, мы просто ничего не делаем (имитируем обновление времени в памяти)
-                continue
+                node = lookup(session.vfs, full_path)
             except VfsError:
-                # Если файла нет — создаем новый пустой файл
                 create_file(session.vfs, full_path)
-                
+                continue
+            if isinstance(node, Directory):
+                raise CommandError(
+                    f"touch: {path}: это каталог"
+                )
         except VfsError as exc:
             raise CommandError(f"touch: {path}: {exc}") from exc
     return ""
-
 
 
 def _follow_cwd(session, src, final):
